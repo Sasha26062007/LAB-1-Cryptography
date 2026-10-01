@@ -1,6 +1,8 @@
 import os
 from preprocess import prepare_datasets
 from entropy_calc import run_full_entropy_analysis
+from experiments import run_section_3, run_section_4
+from shannon_entropy import run_section_5_and_6
 
 
 def main():
@@ -12,13 +14,14 @@ def main():
     nosp_path = os.path.join(data_dir, "text_without_spaces.txt")
 
     print("=" * 65)
-    print("КОМП'ЮТЕРНИЙ ПРАКТИКУМ №1: ЧАСТИНА 1 ТА 2 (ОЛЕКСАНДР ПАНАЙОТОВ)")
+    print("КОМП'ЮТЕРНИЙ ПРАКТИКУМ №1: ОЦІНКА ЕНТРОПІЇ ВІДКРИТОГО ТЕКСТУ")
+    print("Бригада: Панайотов Олександр, Бучинський Денис, Костенко Володимир")
     print("=" * 65)
 
-    # 1. Попередня обробка тексту (Розділ 1)
+    # 1. Попередня обробка тексту (Олександр Панайотов)
     if not (os.path.exists(sp_path) and os.path.exists(nosp_path)):
         print("\n[1] Обробка та нормалізація тексту...")
-        stats = prepare_datasets(raw_path, data_dir)
+        prepare_datasets(raw_path, data_dir)
     else:
         print("\n[1] Файли даних знайдено:")
 
@@ -30,7 +33,7 @@ def main():
     print(f"  • Текст із пробілами: {len(text_sp)} символів (потужність алфавіту: {len(set(text_sp))})")
     print(f"  • Текст без пробілів: {len(text_nosp)} символів (потужність алфавіту: {len(set(text_nosp))})")
 
-    # 2. Розрахунок H1 та H2 (Розділ 2)
+    # 2. Розрахунок H1 та H2 (Олександр Панайотов)
     print("\n[2] Розрахунок монограм, біграм та ентропій...")
     res = run_full_entropy_analysis(text_sp, text_nosp, res_dir)
 
@@ -52,7 +55,18 @@ def main():
     print("  Без пробілів (перетинні):  " + ", ".join(f"'{bg}' ({d['probability']:.4f})" for bg, d in res['without_spaces']['top5_bigrams_ov']))
     print("  Без пробілів (неперетинні):" + ", ".join(f"'{bg}' ({d['probability']:.4f})" for bg, d in res['without_spaces']['top5_bigrams_nov']))
 
-    print(f"\nПовні CSV-таблиці частот збережено у папку: {res_dir}")
+    # 3 & 4. Експерименти над розподілами та періодичністю (Денис Бучинський)
+    print("\n" + "=" * 65)
+    print("[3 & 4] Експерименти над моделями та періодичністю (Денис Бучинський)")
+    run_section_3(h1_natural_text=res['without_spaces']['H1'])
+    run_section_4()
+
+    # 5 & 6. Оцінка Шеннона та надлишковість (Володимир Костенко)
+    print("\n" + "=" * 65)
+    print("[5 & 6] Оцінка за методом Шеннона та розрахунок надлишковості R (Володимир Костенко)")
+    run_section_5_and_6(entropy_analysis_res=res, results_dir=res_dir)
+
+    print(f"\n[OK] Усі обчислення завершено. Результати CSV експортовано у: {res_dir}")
 
 
 if __name__ == "__main__":
